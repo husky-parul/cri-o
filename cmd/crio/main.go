@@ -75,6 +75,11 @@ func catchShutdown(ctx context.Context, cancel context.CancelFunc, gserver *grpc
 			}
 			gserver.GracefulStop()
 			hserver.Shutdown(ctx) // nolint: errcheck
+			if tp != nil {
+				if err := tp.Shutdown(ctx); err != nil {
+					logrus.Warnf("Error shutting down opentelemetry tracer provider: %v", err)
+				}
+			}
 			if err := sserver.StopStreamServer(); err != nil {
 				logrus.Warnf("Error shutting down streaming server: %v", err)
 			}
